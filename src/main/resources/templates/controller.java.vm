@@ -1,0 +1,94 @@
+package ${package.Controller};
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.example.depotmanage.common.Constants;
+import com.example.depotmanage.common.Result;
+import org.springframework.web.bind.annotation.*;
+import javax.annotation.Resource;
+import java.util.List;
+
+import $!{package.Service}.$!{table.serviceName};
+import ${package.Entity}.${entity};
+
+#if(${superControllerClassPackage})
+import ${superControllerClassPackage};
+#end
+
+/**
+ * <p>
+ * $!{table.comment} 前端控制器
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+#if(${restControllerStyle})
+@RestController
+#else
+@Controller
+#end
+@RequestMapping("#if(${package.ModuleName})/${package.ModuleName}#end/#if(${controllerMappingHyphenStyle})${controllerMappingHyphen}#else${table.entityPath}#end")
+#if(${kotlin})
+class ${table.controllerName}#if(${superControllerClass}) : ${superControllerClass}()#end
+
+#else
+#if(${superControllerClass})
+public class ${table.controllerName} extends ${superControllerClass} {
+#else
+public class ${table.controllerName} {
+#end
+
+    @Resource
+    private ${table.serviceName} ${table.entityPath}Service;
+
+    @PostMapping
+    public Result save(@RequestBody ${entity} ${table.entityPath}) {
+        //新增
+        return Result.success(${table.entityPath}Service.saveOrUpdate(${table.entityPath}));
+    }
+
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable Integer id) {
+        //删除单个
+        return Result.success(${table.entityPath}Service.removeById(id));
+    }
+
+    @PostMapping("/del/batch")
+    public Result deleteBatch(@RequestBody List<Integer> ids){
+        //批量删除
+        return Result.success(${table.entityPath}Service.removeBatchByIds(ids));
+    }
+
+    @GetMapping("/")
+    public Result findAll() {
+        //查询所有
+        return Result.success(${table.entityPath}Service.list());
+    }
+
+    @GetMapping("/{id}")
+    public Result findOne(@PathVariable Integer id) {
+        //根据id查询一条
+        return Result.success(${table.entityPath}Service.getById(id));
+    }
+
+    @GetMapping("/page")
+    public Result findPage(@RequestParam Integer pageNum,
+                                @RequestParam Integer pageSize) {
+//@RequestParam(defaultValue = "") String username,//如果不传数据就为空
+//@RequestParam(defaultValue = "") String account
+        //分页查询，条件查询
+        QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>();
+//        if(!"".equals(username)){
+//            //判断是否为空，如果为空就不拼接命令，不判断的话，查询的数据有缺
+//            queryWrapper.like("name",username);
+//        }
+//        if(!"".equals(account)){
+//            queryWrapper.like("account",account);
+//        }
+        return Result.success(${table.entityPath}Service.page(new Page<>(pageNum, pageSize),queryWrapper));
+    }
+
+}
+#end

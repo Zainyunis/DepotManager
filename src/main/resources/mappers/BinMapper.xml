@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.depotmanage.mapper.BinMapper">
+
+    <select id="findOneBySn" resultType="com.example.depotmanage.controller.DTO.BinDTO">
+        SELECT house.name houseName,house.SN houseSn,shelf.SN shelfSn,bin.SN binSn,bin.row,bin.col,
+               bin.max_load maxLoad,bin.operation_date operationDate,goods.name goodsName,goods.SN goodsSn,
+               bin.amount,goods.unit,goods.unit_weight unitWeight,goods.notes goodsNotes
+        FROM bin
+                 LEFT JOIN shelf ON bin.shelf_id=shelf.id
+                 LEFT JOIN goods ON bin.goods_SN=goods.SN
+                 LEFT JOIN house ON shelf.house_id=house.id
+        WHERE bin.SN=#{binSn}
+    </select>
+    <select id="findPage" resultType="com.example.depotmanage.controller.DTO.BinDTO">
+        SELECT house.name houseName,house.SN houseSn,shelf.SN shelfSn,bin.SN binSn,bin.row,bin.col,
+               bin.max_load maxLoad,bin.operation_date operationDate,goods.name goodsName,goods.SN goodsSn,
+               bin.amount,goods.unit,goods.unit_weight unitWeight,goods.notes goodsNotes,bin.is_load isLoad
+        FROM bin
+                 LEFT JOIN shelf ON bin.shelf_id=shelf.id
+                 LEFT JOIN goods ON bin.goods_SN=goods.SN
+                 LEFT JOIN house ON shelf.house_id=house.id
+        <where>
+            <if test="houseName !=null and houseName !=''">
+                and house.name like concat('%',#{houseName},'%')
+            </if>
+            <if test="houseSn !=null and houseSn !=''">
+                and house.SN like concat('%',#{houseSn},'%')
+            </if>
+            <if test="shelfSn !=null and shelfSn !=''">
+                and shelf.SN like concat('%',#{shelfSn},'%')
+            </if>
+            <if test="binSn !=null and binSn !=''">
+                and bin.SN like concat('%',#{binSn},'%')
+            </if>
+            <if test="isLoad !=null and isLoad !='-1'">
+                and bin.is_load like concat('%',#{isLoad},'%')
+            </if>
+            <if test="goodsName !=null and goodsName !=''">
+                and goods.name like concat('%',#{goodsName},'%')
+            </if>
+            <if test="goodsSn !=null and goodsSn !=''">
+                and goods.SN like concat('%',#{goodsSn},'%')
+            </if>
+            <if test="goodsNotes !=null and goodsNotes !=''">
+                and goods.notes like concat('%',#{goodsNotes},'%')
+            </if>
+            <if test="operationDate !=null and operationDate !=''">
+                and bin.operation_date like concat('%',#{operationDate},'%')
+            </if>
+        </where>
+    </select>
+</mapper>
